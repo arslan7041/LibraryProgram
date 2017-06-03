@@ -1,0 +1,55 @@
+import java.util.*;
+
+public class Catalog {
+
+    private Map<LibraryMaterial, List<LibraryMaterialCopy> > catalog;
+
+    // default constructor
+    Catalog(){ catalog = new HashMap<>(); }
+
+    // adds n copies of material to the map
+    // Determines BookCopy or DVDCopy, then uses appropriate contructor
+    public void add(LibraryMaterial material, int n)
+    {
+        List<LibraryMaterialCopy> copies = new ArrayList<>();
+
+        for(int i = 0; i < n; i++)
+            if( material instanceof Book) copies.add( new BookCopy((Book)material) );
+            else copies.add( new DVDCopy((DVD)material) );
+
+        catalog.put(material, copies);
+    }
+
+    // returns all copies of 'material'
+    public List<LibraryMaterialCopy> lookUpCopies(LibraryMaterial material)
+    {
+        return catalog.get(material);
+    }
+
+    // Goes through keys, and returns LibraryMaterial
+    // whose title is 's', null if not found
+    public LibraryMaterial lookUpTitle(String s)
+    {
+        for( LibraryMaterial m : catalog.keySet() )
+            if( m.title_is(s) ) return m;
+
+        return null;
+    }
+
+    // makes and returns a list of all copies not yet checked out
+    public List<LibraryMaterialCopy> getAvailableCopies(LibraryMaterial material)
+    {
+        List<LibraryMaterialCopy> availableCopies = new ArrayList<>();
+
+        for( LibraryMaterialCopy copy : catalog.get(material) )
+            if(copy.getCard() == null) availableCopies.add(copy);
+
+        return availableCopies;
+    }
+
+    // returns a list of all keys in the map (using keySet)
+    public List<LibraryMaterial> getAllLibraryMaterials()
+    {
+       return new ArrayList<LibraryMaterial>( catalog.keySet() );
+    }
+}

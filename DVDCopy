@@ -1,0 +1,30 @@
+import java.time.LocalDate;
+
+public class DVDCopy extends LibraryMaterialCopy {
+
+    public static final int BORROWING_WEEKS = 2;
+    public static final double FINE_PER_DAY = 1.00;
+
+    private DVD dvd;
+
+    public DVDCopy(DVD d)
+    {
+        super();
+        dvd = d;
+    }
+
+    public LibraryMaterial getLibraryMaterial() {return dvd;}
+    public String getTitle() {return dvd.getTitle();}
+    public String getISBN() {return dvd.getISBN();}
+    public String getMainActor() {return dvd.getMainActor();}
+    public double getFINE_PER_DAY() {return FINE_PER_DAY;}
+    public int getBorrowingPeriod() {return BORROWING_WEEKS;}
+    public boolean title_is(String s) { return s.equals(getTitle()); }
+
+    public void print()
+    {
+        dvd.print();
+        super.print();
+    }
+
+}

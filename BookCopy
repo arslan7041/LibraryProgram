@@ -1,0 +1,46 @@
+import java.time.LocalDate;
+
+public class BookCopy extends LibraryMaterialCopy {
+
+    public static final int BORROWING_WEEKS = 3;
+    public static final int RENEWAL_WEEKS = 2;
+    public static final double FINE_PER_DAY = 0.10;
+
+    private Book book;
+
+    public BookCopy(Book b)
+    {
+        super();
+        book = b;
+    }
+
+    public LibraryMaterial getLibraryMaterial() {return book;}
+    public String getTitle() {return book.getTitle();}
+    public String getISBN() {return book.getISBN();}
+    public String getAuthor() {return book.getAuthor();}
+    public double getFINE_PER_DAY() {return FINE_PER_DAY;}
+    public int getBorrowingPeriod() {return BORROWING_WEEKS;}
+    public boolean title_is(String s) { return s.equals(getTitle()); }
+
+    //renews book using RENEWAL_WEEKS as interval
+    //returns false if book is not checked out
+    public boolean renew (LocalDate renewalDate)
+    {
+        if (card == null)
+            return false;
+        dueDate = renewalDate.plusWeeks(RENEWAL_WEEKS);
+        return true;
+    }
+
+    //default method uses todays date as renewal date
+    public boolean renew ()
+    {
+        return renew(LocalDate.now());
+    }
+
+    public void print()
+    {
+        book.print();
+        super.print();
+    }
+}

@@ -1,0 +1,18 @@
+public class DVD extends LibraryMaterial {
+
+    private String mainActor;
+
+    public DVD(String i, String t, String a)
+    {
+        super(i, t);
+        mainActor = a;
+    }
+
+    public String getMainActor() {return mainActor;}
+
+    public void print()
+    {
+        super.print();
+        System.out.println("MAIN ACTOR: " + mainActor);
+    }
+}

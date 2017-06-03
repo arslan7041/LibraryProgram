@@ -1,0 +1,22 @@
+import java.util.ArrayList;
+import java.util.List;
+
+public class LibraryCardManager {
+
+    List<LibraryCard> cards;
+
+    // default constructor
+    public LibraryCardManager() { cards = new ArrayList<>(); }
+
+    public void addCard(LibraryCard c){ cards.add(c); }
+
+    // returns card whose ID is 'id', null if not found
+    public LibraryCard lookUpID( String id )
+    {
+        for( LibraryCard c : cards )
+            if( c.getID().equals(id) ) return c;
+
+        return null;
+    }
+
+}

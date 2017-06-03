@@ -1,0 +1,69 @@
+import java.time.LocalDate;
+
+public abstract class LibraryMaterialCopy implements Cloneable {
+
+    protected LibraryCard card;
+    protected LocalDate dueDate;
+
+    LibraryMaterialCopy()
+    {
+        card = null;
+        dueDate = null;
+    }
+
+    public abstract LibraryMaterial getLibraryMaterial();
+    public abstract String getTitle();
+    public abstract String getISBN();
+    public abstract double getFINE_PER_DAY();
+    public abstract int getBorrowingPeriod();
+    public abstract boolean title_is(String s);
+
+    public LibraryCard getCard() { return card; };
+    public LocalDate getDueDate() { return dueDate; };
+
+    public boolean checkOut(LibraryCard borrower, LocalDate dateOfBorrowing)
+    {
+        if (card != null)
+            return false;
+        card = borrower;
+        dueDate = dateOfBorrowing.plusWeeks(getBorrowingPeriod());
+        return true;
+    }
+
+    public boolean checkOut(LibraryCard borrower)
+    {
+        return checkOut(borrower, LocalDate.now());
+    }
+
+    public boolean returnItem()
+    {
+        if (card == null)
+            return false;
+        card = null;
+        return true;
+    }
+
+    public void print()
+    {
+        if (card != null)
+        {
+            System.out.println("Checked out to: " + card.getCardholderName() + ", " + card.getID());
+            System.out.println("Due: " + dueDate);
+        }
+    }
+
+    // returns deep copied clone of LibraryMaterialCopy
+    public LibraryMaterialCopy clone()
+    {
+        LibraryMaterialCopy lmc = null;
+        try{
+            lmc = (LibraryMaterialCopy)super.clone();
+            lmc.card = card.clone();
+        }
+        catch(CloneNotSupportedException e){
+            System.out.println(e.getMessage());
+
+        }
+        return lmc;
+    }
+}

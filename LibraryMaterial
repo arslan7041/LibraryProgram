@@ -1,0 +1,45 @@
+public class LibraryMaterial {
+
+    protected String title;
+    protected String isbn;
+
+    LibraryMaterial(String i, String t)
+    {
+        isbn = i;
+        title = t;
+    }
+
+    public String getISBN () {return isbn;}
+    public String getTitle() {return title;}
+
+    public boolean title_is(String s) { return s.equals(title); }
+
+    @Override
+    public boolean equals(Object o)
+    {
+        if (o == this)
+            return true;
+        if (o.getClass() != this.getClass())
+            return false;
+        LibraryMaterial lm = (LibraryMaterial)o;
+        return (this.isbn.equals(lm.isbn) && this.title.equals(lm.title));
+    }
+
+    @Override
+    public int hashCode(){
+        int result = 17;
+
+        int c = 0;
+        c += isbn.hashCode();
+        c+= title.hashCode();
+        result = 31 * result + c;
+        return result;
+
+    }
+
+    public void print()
+    {
+        System.out.println("TITLE: " + title);
+        System.out.println("ISBN: " + isbn);
+    }
+}

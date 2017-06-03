@@ -1,0 +1,159 @@
+import java.util.List;
+import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+
+
+
+public class LibraryCard implements Cloneable {
+
+    private String id;
+    private String cardholderName;
+    private List<LibraryMaterialCopy> copiesCheckedOut;
+    private double balance;
+
+    public LibraryCard(String i, String name)
+    {
+        id = i;
+        cardholderName = name;
+        copiesCheckedOut = new ArrayList<LibraryMaterialCopy>();
+        balance = 0;
+    }
+
+    // getters
+    public String getID() {return id;}
+    public String getCardholderName() {return cardholderName;}
+    public List<LibraryMaterialCopy> getCopiesCheckedOut() {return copiesCheckedOut;}
+    public double getBalance() {return balance;}
+    // returns copy whose title is 's', null if not found
+    public LibraryMaterialCopy lookUpTitle(String s)
+    {
+        for( LibraryMaterialCopy copy : copiesCheckedOut)
+            if(copy.title_is(s))
+                return copy;
+        
+        return null;
+    }
+
+    // setter
+    public void setCardholderName (String name) {cardholderName = name;}
+
+    //checks out book and sends message to BookCopy to check itself out too
+    //returns false if book is already checked out
+    //takes parameter that reflects the date that the checkout is happening
+    public boolean checkOutItem (LibraryMaterialCopy copy, LocalDate todaysDate)
+    {
+        if ( !copy.checkOut(this, todaysDate) ) return false;
+        copiesCheckedOut.add(copy);
+        return true;
+    }
+
+    //default check out, uses today's date
+    public boolean checkOutItem(LibraryMaterialCopy copy)
+    {
+        return checkOutItem(copy, LocalDate.now());
+    }
+
+    //returns and sends message to BookCopy/DVDCopy to do the same
+    //returns false if copy is not checked out
+    //takes parameter that expresses the date of return
+    public boolean returnItem (LibraryMaterialCopy copy, LocalDate returnDate)
+    {
+        LocalDate dueDate = copy.getDueDate();
+        if (!copy.returnItem())
+            return false;
+        if (!copiesCheckedOut.remove(copy))
+            return false;
+        long daysBetween = ChronoUnit.DAYS.between(dueDate, returnDate);
+        if (daysBetween > 0) //item is returned late
+        {
+            balance += copy.getFINE_PER_DAY() * daysBetween;
+        }
+        return true;
+    }
+
+    //default method, uses today's date as returns date
+    public boolean returnItem (LibraryMaterialCopy copy) { return returnItem(copy, LocalDate.now()); }
+
+    //renews book. Returns false if book is not checked out already
+    //takes parameter that expresses date of renewal
+    public boolean renewBook(BookCopy book, LocalDate renewalDate)
+    {
+        if (!copiesCheckedOut.contains(book))
+            return false;
+        if (!book.renew(renewalDate))
+            return false;
+        return true;
+    }
+
+    //default renewal method uses today's date as renewal date.
+    public boolean renewBook (BookCopy book)
+    {
+        return renewBook(book, LocalDate.now());
+    }
+
+    //returns a List of books due on or before date
+    public List<LibraryMaterialCopy> getCopiesDueBy(LocalDate date)
+    {
+        List<LibraryMaterialCopy> booksDue = new ArrayList();
+        for (LibraryMaterialCopy copy: copiesCheckedOut)
+        {
+            if (copy.getDueDate().isBefore(date) || copy.getDueDate().equals(date))
+            {
+                booksDue.add(copy);
+            }
+        }
+        return booksDue;
+    }
+
+    //returns Copies overdue as of todaysDate
+    //which means that they were actually due by yesterday
+    public List<LibraryMaterialCopy> getCopiesOverdue (LocalDate todaysDate)
+    {
+        return getCopiesDueBy(todaysDate.minusDays(1));
+    }
+
+    //default method, returns Copies overdue as of today, which means that they
+    //were due by yesterday
+    public List<LibraryMaterialCopy> getCopiesOverdue()
+    {
+        return getCopiesOverdue(LocalDate.now());
+    }
+
+    //returns List of Copies, sorted by due date (earliest due date first)
+    //uses insertion sort
+    public List<LibraryMaterialCopy> getCopiesSorted()
+    {
+        for (int i = 1; i < copiesCheckedOut.size(); i++)
+        {
+            int j = i;
+            while (j > 0 && copiesCheckedOut.get(j-1).getDueDate().isAfter(copiesCheckedOut.get(j).getDueDate()))
+            {
+                //swap elements in positions j and j-1
+                LibraryMaterialCopy temp = copiesCheckedOut.get(j);
+                copiesCheckedOut.set(j, copiesCheckedOut.get(j-1));
+                copiesCheckedOut.set(j-1, temp);
+
+                j = j-1;
+            }
+        }
+        return copiesCheckedOut;
+    }
+
+    public LibraryCard clone()
+    {
+        LibraryCard c = null;
+        try {
+            c = (LibraryCard)super.clone();
+            c.copiesCheckedOut = new ArrayList<LibraryMaterialCopy>( copiesCheckedOut );
+            for(int i = 0; i < copiesCheckedOut.size(); i++)
+                c.copiesCheckedOut.set( i, (LibraryMaterialCopy)copiesCheckedOut.get(i).clone() );
+        }
+        catch(CloneNotSupportedException e) {
+            System.out.println( e.getMessage() );
+        }
+
+        return c;
+    }
+
+}
